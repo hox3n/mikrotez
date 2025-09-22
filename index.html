@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parashikimi i shlyerjes së kredive në mikrofinancën shqiptare duke përdorur IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            min-height: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideIn 0.8s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+
+        .slide:nth-child(odd) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            animation: expandLine 1s ease-out 0.5s forwards;
+            transform: translateX(-50%);
+        }
+
+        @keyframes expandLine {
+            to {
+                width: 60%;
+            }
+        }
+
+        .slide h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .slide h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .slide p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            text-align: justify;
+        }
+
+        .slide ul, .slide ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        .slide li {
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 1.15em;
+        }
+
+        /* Title slide */
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 700px;
+        }
+
+        .title-slide h1 {
+            font-size: 3.2em;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .author-info {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .author-info:nth-child(2) { animation-delay: 1s; }
+        .author-info:nth-child(3) { animation-delay: 1.2s; }
+        .author-info:nth-child(4) { animation-delay: 1.4s; }
+        .author-info:nth-child(5) { animation-delay: 1.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Table of Contents */
+        .toc-slide {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            transform: translateX(-50px);
+            opacity: 0;
+            animation: slideInToc 0.6s ease-out forwards;
+        }
+
+        .toc-list li:nth-child(1) { animation-delay: 0.2s; }
+        .toc-list li:nth-child(2) { animation-delay: 0.4s; }
+        .toc-list li:nth-child(3) { animation-delay: 0.6s; }
+        .toc-list li:nth-child(4) { animation-delay: 0.8s; }
+        .toc-list li:nth-child(5) { animation-delay: 1s; }
+        .toc-list li:nth-child(6) { animation-delay: 1.2s; }
+
+        @keyframes slideInToc {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Statistics cards */
+        .stat-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: popIn 0.8s ease-out forwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.2s; }
+        .stat-card:nth-child(2) { animation-delay: 0.4s; }
+        .stat-card:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes popIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        /* Feature importance carousel */
+        .carousel-container {
+            position: relative;
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .carousel-header {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .carousel-content {
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .carousel-slide.prev {
+            transform: translateX(-100%);
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 18px 25px;
+            margin: 10px 0;
+            background: linear-gradient(90deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            border-left: 6px solid #667eea;
+            transition: all 0.3s ease;
+            transform: translateX(-50px);
+            opacity: 0;
+            animation: slideInFeature 0.6s ease-out forwards;
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-item:nth-child(2) { animation-delay: 0.2s; }
+        .feature-item:nth-child(3) { animation-delay: 0.3s; }
+        .feature-item:nth-child(4) { animation-delay: 0.4s; }
+        .feature-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInFeature {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .feature-score {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            padding: 25px;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: #667eea;
+            transform: scale(1.4);
+        }
+
+        /* Model comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .comparison-table td {
+            padding: 18px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .comparison-table tr:hover td {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        /* Thanks slide */
+        .thanks-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            min-height: 700px;
+        }
+
+        .thanks-slide h1 {
+            color: white;
+            font-size: 4em;
+            margin-bottom: 50px;
+        }
+
+        .thanks-content {
+            font-size: 1.5em;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 25px;
+                min-height: 500px;
+            }
+            
+            .slide h1 {
+                font-size: 2em;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.4em;
+            }
+            
+            .stat-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .author-info {
+                font-size: 1.1em;
+            }
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            color: #666;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .point-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: popIn 0.8s ease-out forwards;
+        }
+
+        .point-card:nth-child(1) { animation-delay: 0.2s; }
+        .point-card:nth-child(2) { animation-delay: 0.4s; }
+
+        .point-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <div class="slide-number">1/18</div>
+            <h1>Parashikimi i shlyerjes së kredive në mikrofinancën shqiptare duke përdorur Inteligjencën Artificiale</h1>
+            <div class="author-info"><strong>Punuan:</strong> Eri Braho</div>
+            <div class="author-info"><strong>Udhëheqës shkencor:</strong> Prof. Asoc. Dr. Albana Gorishti</div>
+            <div class="author-info"><strong>Master Shkencor - Siguri Informacioni</strong></div>
+            <div class="author-info"><strong>Universiteti i Tiranës - Fakulteti i Ekonomisë</strong></div>
+            <div class="author-info"><strong>Tiranë, 2025</strong></div>
+        </div>
+
+        <!-- Slide 2: Table of Contents -->
+        <div class="slide toc-slide">
+            <div class="slide-number">2/18</div>
+            <h1>Përmbajtja</h1>
+            <ul class="toc-list">
+                <li>Konteksti i Mikrofinancës në Shqipëri</li>
+                <li>Problematika dhe Objektivat</li>
+                <li>Metodologjia dhe Qasja Kërkimore</li>
+                <li>Përgatitja e të Dhënave</li>
+                <li>Modelet e Inteligjencës Artificiale</li>
+                <li>Rezultatet dhe Performanca</li>
+                <li>Përfundime dhe Rekomandime</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Context -->
+        <div class="slide">
+            <div class="slide-number">3/18</div>
+            <h1>Konteksti i Mikrofinancës në Shqipëri</h1>
+            
+            <div class="stat-container">
+                <div class="stat-card">
+                    <div class="stat-number">53.6</div>
+                    <div class="stat-label">Miliardë Lekë Portofol (2023)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7.25%</div>
+                    <div class="stat-label">Nga Totali i Sektorit Bankar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Institucione Aktive</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p><strong>Rritje e konsiderueshme:</strong> Portofoli arriti në 57.6 miliardë lekë në tremujorin e parë të 2024, me rritje 14.7% krahasuar me vitin e kaluar.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Problem Statement -->
+        <div class="slide">
+            <div class="slide-number">4/18</div>
+            <h1>Problematika dhe Sfidat</h1>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h3>Vlerësimi i Riskut</h3>
+                    <p>Vështirësi në vlerësimin e aftësisë kreditore të individëve pa histori bankare ose me të dhëna të fragmentuara.</p>
+                </div>
+                <div class="point-card">
+                    <h3>Të dhënat Jo-konvencionale</h3>
+                    <p>Nevoja për përdorimin e metodave alternative që përfshijnë të dhëna jo-tradicionale për vlerësim më gjithëpërfshirës.</p>
+                </div>
+            </div>
+
+            <h2>Rëndësia e IA në Mikrofinancë</h2>
+            <ul>
+                <li>75% e firmave financiare në Mbretërinë e Bashkuar përdorin IA</li>
+                <li>Modelet ML ofrojnë parashikime më të sakta të riskut kreditor</li>
+                <li>Mundësi për përfshirje financiare të grupeve të margjinalizuara</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: Objectives -->
+        <div class="slide">
+            <div class="slide-number">5/18</div>
+            <h1>Objektivat e Studimit</h1>
+            
+            <div class="highlight-box">
+                <h2>Synimi Kryesor</h2>
+                <p>Përshtatie i një modeli IA për parashikimin e riskut të kthimit të kredisë në mikrofinancë në kontekstin shqiptar</p>
+            </div>
+
+            <h2>Objektivat Specifike:</h2>
+            <ol>
+                <li><strong>Shqyrtimi i qasjeve të ndryshme</strong> bazuar në teknika të Machine Learning</li>
+                <li><strong>Zhvillimi i modeleve IA</strong> për parashikimin e kthimit të kredisë</li>
+                <li><strong>Krahasimi i performancës</strong> së këtyre modeleve me standardin e industrisë</li>
+                <li><strong>Identifikimi i faktorëve kryesorë</strong> që ndikojnë në shlyerjen e kredive</li>
+            </ol>
+        </div>
+
+        <!-- Slide 6: Methodology -->
+        <div class="slide">
+            <div class="slide-number">6/18</div>
+            <h1>Metodologjia</h1>
+            
+            <h2>Qasja Kërkimore</h2>
+            <p>Design Science Research (DSR) me fokus në ndërtimin, testimin dhe krahasimin e modeleve parashikuese që ruajnë privatësinë e të dhënave.</p>
+            
+            <h2>Modelet e Përdorura</h2>
+            <div class="key-points">
+                <div class="point-card">
+                    <h3>Gradient Decision Forest (GDF)</h3>
+                    <p>Algoritëm ansambël që kombinon pyjesh vendimmarrëse me optimizim gradiento-bazuar.</p>
+                </div>
+                <div class="point-card">
+                    <h3>TabNet</h3>
+                    <p>Arkitekturë deep learning e specializuar për të dhëna tabulare me mekanizma attention.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Dataset -->
+        <div class="slide">
+            <div class="slide-number">7/18</div>
+            <h1>Baza e të Dhënave</h1>
+            
+            <div class="stat-container">
+                <div class="stat-card">
+                    <div class="stat-number">60,000+</div>
+                    <div class="stat-label">Regjistrime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">Atribute</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2020-2025</div>
+                    <div class="stat-label">Periudha</div>
+                </div>
+            </div>
+
+            <h2>Kategoritë e Variablave</h2>
+            <ul>
+                <li><strong>Socio-demografike:</strong> mosha, gjinia, statusi martesor, arsimi</li>
+                <li><strong>Financiare:</strong> të ardhurat, punësimi, kredi ekzistuese</li>
+                <li><strong>Parametrat e kredisë:</strong> shuma, norma, afati, kësti</li>
+                <li><strong>Sjellja në pagesë:</strong> historia e vonесave, statusi përfundimtar</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Data Processing -->
+        <div class="slide">
+            <div class="slide-number">8/18</div>
+            <h1>Përgatitja e të Dhënave</h1>
+            
+            <h2>Procesi i Pastrimit (6 hapa)</h2>
+            <ol>
+                <li><strong>Verifikimi:</strong> Eliminim identifikuesve personalë</li>
+                <li><strong>Trajtimi i mungesave:</strong> Plotësim me vlera mesatare</li>
+                <li><strong>Inxhinieria e tipave:</strong> Krijim variablash të reja</li>
+                <li><strong>Balancimi:</strong> Teknika downsampling</li>
+                <li><strong>Ndarja:</strong> 70% Train / 15% Validation / 15% Test</li>
+                <li><strong>Standardizimi:</strong> StandardScaler dhe LabelEncoder</li>
+            </ol>
+
+            <div class="highlight-box">
+                <p><strong>Teknologji:</strong> TensorFlow/Keras, PyTorch, Scikit-Learn, Pandas/NumPy, Matplotlib</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: GBDF Details -->
+        <div class="slide">
+            <div class="slide-number">9/18</div>
+            <h1>Gradient Boosted Decision Forests</h1>
+            
+            <h2>Karakteristikat Kryesore</h2>
+            <ul>
+                <li>Përdorin një seri pemësh vendimi që ndërtohen iterativisht</li>
+                <li>Çdo pemë e re korrigjon gabimet e pemës paraardhëse</li>
+                <li>Efikasë në kapjen e strukturave komplekse në të dhëna</li>
+                <li>Interpretueshmëri e lartë përmes feature importance</li>
+            </ul>
+
+            <h2>Optimizimi i Parametrave</h2>
+            <div class="key-points">
+                <div class="point-card">
+                    <h3>Parametrat e Testuar</h3>
+                    <p><strong>num_trees:</strong> 300, 400, 500<br>
+                    <strong>max_depth:</strong> 10, 11, 12<br>
+                    <strong>subsample:</strong> 0.8, 0.85, 0.9<br>
+                    <strong>shrinkage:</strong> 0.01, 0.05, 0.1</p>
+                </div>
+                <div class="point-card">
+                    <h3>Konfigurimi Optimal</h3>
+                    <p><strong>num_trees:</strong> 300<br>
+                    <strong>max_depth:</strong> 10<br>
+                    <strong>subsample:</strong> 0.85<br>
+                    <strong>shrinkage:</strong> 0.1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: TabNet Details -->
+        <div class="slide">
+            <div class="slide-number">10/18</div>
+            <h1>TabNet - Arkitektura Inovative</h1>
+            
+            <h2>Avantazhet Kryesore</h2>
+            <ul>
+                <li><strong>Mekanizmi i Attention:</strong> Përzgjedh tiparet më relevante dinamikisht</li>
+                <li><strong>Interpretueshmëri:</strong> Analizë e peshave në çdo hap vendimmarrjeje</li>
+                <li><strong>Performancë e lartë:</strong> E specializuar për të dhëna tabulare</li>
+                <li><strong>Trajnim efikas:</strong> Më i shpejtë se modelet tradicionale të deep learning</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3>Zhvilluar nga Google AI</h3>
+                <p>E para arkitekturë deep learning e dizajnuar specifikisht për të dhëna tabelare, duke kombinuar fuqinë e rrjeteve neurale me strukturën e përshtatshme për tabelat.</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Model Performance -->
+        <div class="slide">
+            <div class="slide-number">11/18</div>
+            <h1>Performanca e Modeleve</h1>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metrika</th>
+                        <th>GBDF</th>
+                        <th>TabNet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Accuracy</strong></td>
+                        <td>~80%</td>
+                        <td>~82%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision</strong></td>
+                        <td>0.775</td>
+                        <td>0.78</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recall</strong></td>
+                        <td>0.85</td>
+                        <td>0.89</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F1-Score</strong></td>
+                        <td>0.813</td>
+                        <td>0.83</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AUC</strong></td>
+                        <td>0.856</td>
+                        <td>0.91</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <p><strong>Rezultati:</strong> TabNet tregoi performancë superiore, veçanërisht në reduktimin e False Positives dhe rritjen e AUC.</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Feature Importance Carousel -->
+        <div class="slide">
+            <div class="slide-number">12/18</div>
+            <h1>Rëndësia e Veçorive</h1>
+            
+            <div class="carousel-container">
+                <div class="carousel-header">
+                    10 Veçoritë më të Rëndësishme për TabNet
+                </div>
+                <div class="carousel-content">
+                    <div class="carousel-slide active">
+                        <div class="feature-item">
+                            <span class="feature-name">DaysInstLate2</span>
+                            <span class="feature-score">0.2787</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">Loan_Default</span>
+                            <span class="feature-score">0.2340</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">HasLateHistory</span>
+                            <span class="feature-score">0.1439</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">LoanAmountToIncome</span>
+                            <span class="feature-score">0.1322</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">Gender</span>
+                            <span class="feature-score">0.1046</span>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="feature-item">
+                            <span class="feature-name">LoanSegment</span>
+                            <span class="feature-score">0.0531</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">FirstApplYesNo</span>
+                            <span class="feature-score">0.0174</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">Age</span>
+                            <span class="feature-score">0.0123</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">InterestRate</span>
+                            <span class="feature-score">0.0117</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-name">UrbanRural</span>
+                            <span class="feature-score">0.0088</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <div class="nav-dot active" onclick="currentSlide(1)"></div>
+                    <div class="nav-dot" onclick="currentSlide(2)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Key Findings -->
+        <div class="slide">
+            <div class="slide-number">13/18</div>
+            <h1>Gjetjet Kryesore</h1>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h3>Faktorët Dominues</h3>
+                    <ul>
+                        <li>Ditët e vonesës në pagesa (DaysInstLate2)</li>
+                        <li>Historia e mospagesave (Loan_Default)</li>
+                        <li>Historia e vonesave (HasLateHistory)</li>
+                        <li>Raporti kredi/të ardhura</li>
+                    </ul>
+                </div>
+                <div class="point-card">
+                    <h3>Interpretueshmëria</h3>
+                    <ul>
+                        <li>TabNet ofron transparencë të lartë</li>
+                        <li>Mekanizmi i attention shpjegon vendimmarrjen</li>
+                        <li>GBDF siguron feature importance të qartë</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p><strong>Konkluzion:</strong> Historia financiare mbetet faktori më i rëndësishëm në parashikimin e shlyerjes së kredive.</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Limitations -->
+        <div class="slide">
+            <div class="slide-number">14/18</div>
+            <h1>Kufizimet e Studimit</h1>
+            
+            <h2>Sfidat me të Dhënat në Kontekstin Shqiptar</h2>
+            <ul>
+                <li><strong>Mosdeklarimi i të ardhurave:</strong> Ekonomia informale ndikon në saktësinë e të dhënave</li>
+                <li><strong>Evazioni fiskal:</strong> Krijoi pasaktësi në profilin financiar të klientëve</li>
+                <li><strong>Inflacioni dhe papunësia:</strong> Ndikojnë në kapacitetin real të shlyerjes</li>
+                <li><strong>Të dhëna të fragmentuara:</strong> Mungesa e integrimit me burime të tjera</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><strong>Impakti:</strong> Këto faktorë reduktojnë praktikisht fuqinë parashikuese të modeleve dhe krijojnë nevoja për qasje më të sofistikuara.</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Recommendations -->
+        <div class="slide">
+            <div class="slide-number">15/18</div>
+            <h1>Rekomandime</h1>
+            
+            <div class="key-points">
+                <div class="point-card">
+                    <h3>Përmirësimi i të Dhënave</h3>
+                    <ul>
+                        <li>Integrim me institucione shtetërore</li>
+                        <li>Përdorim të dhënash alternative</li>
+                        <li>Verifikim më i mirë i të ardhurave</li>
+                    </ul>
+                </div>
+                <div class="point-card">
+                    <h3>Implementimi Praktik</h3>
+                    <ul>
+                        <li>Modele hibride për transparencë</li>
+                        <li>Pilotim para adoptimit të plotë</li>
+                        <li>Trajnim i personelit</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Për Kërkime të Ardhshme</h2>
+            <ul>
+                <li>Zgjerimi i dataset-it me më shumë institucione</li>
+                <li>Përfshirja e indikatorëve makroekonomikë</li>
+                <li>Testimi i teknikave të reja të IA</li>
+            </ul>
+        </div>
+
+        <!-- Slide 16: Impact and Benefits -->
+        <div class="slide">
+            <div class="slide-number">16/18</div>
+            <h1>Impakti dhe Përfitimet</h1>
+            
+            <div class="stat-container">
+                <div class="stat-card">
+                    <div class="stat-number">↑15%</div>
+                    <div class="stat-label">Përmirësim në Saktësi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">↓25%</div>
+                    <div class="stat-label">Reduktim False Positives</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">↑30%</div>
+                    <div class="stat-label">Rritje në Transparencë</div>
+                </div>
+            </div>
+
+            <h2>Përfitimet për Institucionet Mikrofinanciare</h2>
+            <ul>
+                <li><strong>Vendimmarrje më e shpejtë</strong> dhe më e saktë</li>
+                <li><strong>Reduktim i riskut</strong> të humbjes financiare</li>
+                <li><strong>Përfshirje financiare</strong> e grupeve të margjinalizuara</li>
+                <li><strong>Automatizim i proceseve</strong> të vlerësimit</li>
+            </ul>
+        </div>
+
+        <!-- Slide 17: Conclusions -->
+        <div class="slide">
+            <div class="slide-number">17/18</div>
+            <h1>Përfundime</h1>
+            
+            <div class="highlight-box">
+                <h2>Kontributi Kryesor</h2>
+                <p>Ky studim demonstruon se aplikimi i IA në mikrofinancën shqiptare jo vetëm rrit saktësinë e vlerësimit të riskut, por edhe forcon transparencën dhe besueshmërinë e procesit të kreditimit.</p>
+            </div>
+
+            <h2>Përfundime të Rëndësishme</h2>
+            <ul>
+                <li>Modelet e IA kanë potencial të konsiderueshëm në mikrofinancë</li>
+                <li>TabNet ofron avantazhe në interpretueshmëri dhe performancë</li>
+                <li>Historia financiare mbetet faktori më kritik</li>
+                <li>Cilësia e të dhënave është kyçe për suksesin</li>
+                <li>Implementimi kërkon qasje të kujdesshme dhe të etapizuar</li>
+            </ul>
+        </div>
+
+        <!-- Slide 18: Thank You -->
+        <div class="slide thanks-slide">
+            <div class="slide-number">18/18</div>
+            <h1>Faleminderit!</h1>
+            
+            <div class="thanks-content">
+                <p><strong>Pyetje dhe Diskutime</strong></p>
+                <br>
+                <p>Eri Braho</p>
+                <p>Master Shkencor - Siguri Informacioni</p>
+                <p>Universiteti i Tiranës</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carousel functionality
+        let slideIndex = 1;
+        showSlide(slideIndex);
+
+        function currentSlide(n) {
+            showSlide(slideIndex = n);
+        }
+
+        function showSlide(n) {
+            let slides = document.querySelectorAll('.carousel-slide');
+            let dots = document.querySelectorAll('.nav-dot');
+            
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            
+            slides.forEach(slide => {
+                slide.classList.remove('active', 'prev');
+            });
+            
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+            });
+            
+            slides[slideIndex-1].classList.add('active');
+            dots[slideIndex-1].classList.add('active');
+        }
+
+        // Auto-advance carousel
+        setInterval(() => {
+            slideIndex++;
+            if (slideIndex > 2) slideIndex = 1;
+            showSlide(slideIndex);
+        }, 5000);
+
+        // Animate progress bars when they come into view
+        function animateProgressBars() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            progressFills.forEach(fill => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const width = fill.getAttribute('data-width');
+                            fill.style.setProperty('--progress-width', width);
+                        }
+                    });
+                });
+                observer.observe(fill);
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            animateProgressBars();
+        });
+
+        // Smooth scrolling for better presentation flow
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                window.scrollBy({
+                    top: window.innerHeight,
+                    behavior: 'smooth'
+                });
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                window.scrollBy({
+                    top: -window.innerHeight,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
