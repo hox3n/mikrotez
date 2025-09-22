@@ -1017,22 +1017,103 @@
             animateProgressBars();
         });
 
-        // Smooth scrolling for better presentation flow
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
-                e.preventDefault();
-                window.scrollBy({
-                    top: window.innerHeight,
-                    behavior: 'smooth'
-                });
-            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-                e.preventDefault();
-                window.scrollBy({
-                    top: -window.innerHeight,
-                    behavior: 'smooth'
+        // Remote control functionality
+        let currentSlideNumber = 1;
+        const totalSlides = 18;
+
+        function goToSlide(slideNum) {
+            const slides = document.querySelectorAll('.slide');
+            if (slideNum >= 1 && slideNum <= totalSlides) {
+                currentSlideNumber = slideNum;
+                slides[slideNum - 1].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
+        }
+
+        function nextSlide() {
+            if (currentSlideNumber < totalSlides) {
+                goToSlide(currentSlideNumber + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideNumber > 1) {
+                goToSlide(currentSlideNumber - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case 'PageDown':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'PageUp':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(1);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(totalSlides);
+                    break;
+            }
         });
+
+        // WebSocket connection for remote control
+        let ws;
+        function connectRemote() {
+            // This would connect to a simple WebSocket server
+            // For now, we'll use localStorage for same-device control
+            setInterval(() => {
+                const command = localStorage.getItem('presentation_command');
+                if (command) {
+                    localStorage.removeItem('presentation_command');
+                    switch(command) {
+                        case 'next': nextSlide(); break;
+                        case 'prev': prevSlide(); break;
+                        case 'home': goToSlide(1); break;
+                        case 'end': goToSlide(totalSlides); break;
+                        default:
+                            if (command.startsWith('goto_')) {
+                                const slideNum = parseInt(command.split('_')[1]);
+                                goToSlide(slideNum);
+                            }
+                    }
+                }
+            }, 100);
+        }
+
+        // Initialize remote control
+        connectRemote();
+
+        // Track current slide based on scroll position
+        function updateCurrentSlide() {
+            const slides = document.querySelectorAll('.slide');
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
+            
+            slides.forEach((slide, index) => {
+                const slideTop = slide.offsetTop;
+                const slideBottom = slideTop + slide.offsetHeight;
+                
+                if (scrollPosition >= slideTop && scrollPosition <= slideBottom) {
+                    currentSlideNumber = index + 1;
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateCurrentSlide);
     </script>
 </body>
 </html>
