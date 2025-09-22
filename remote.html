@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Remote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            user-select: none;
+        }
+
+        .remote-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .slide-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+
+        .slide-counter {
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .primary-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .primary-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .primary-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .icon {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .slide-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 8px;
+            color: white;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slide-btn:active {
+            transform: scale(0.95);
+        }
+
+        .slide-btn.current {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .connection-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 2.2em;
+            font-weight: 300;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .timer-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .timer-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="remote-container">
+        <div class="header">
+            <h1>Presentation Remote</h1>
+            <div class="connection-indicator">
+                <div class="connection-dot"></div>
+                <span>Connected</span>
+            </div>
+        </div>
+
+        <div class="slide-info">
+            <div class="slide-counter" id="slideCounter">1 / 18</div>
+        </div>
+
+        <div class="timer">
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div class="timer-label">Presentation Time</div>
+            <div class="timer-controls">
+                <button class="timer-btn" onclick="startTimer()">Start</button>
+                <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                <button class="timer-btn" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+
+        <div class="primary-controls">
+            <button class="primary-btn" onclick="prevSlide()">
+                <div class="icon">←</div>
+                <div>Previous</div>
+            </button>
+            <button class="primary-btn" onclick="nextSlide()">
+                <div class="icon">→</div>
+                <div>Next</div>
+            </button>
+        </div>
+
+        <div class="control-grid">
+            <button class="control-btn" onclick="goToSlide(1)">
+                <div class="icon">🏠</div>
+                <div>Home</div>
+            </button>
+            <button class="control-btn" onclick="pausePresentation()">
+                <div class="icon">⏸️</div>
+                <div>Pause</div>
+            </button>
+            <button class="control-btn" onclick="goToSlide(18)">
+                <div class="icon">🏁</div>
+                <div>End</div>
+            </button>
+        </div>
+
+        <div class="status" id="statusMessage">Ready to control presentation</div>
+
+        <div class="slide-grid">
+            <!-- Slide buttons 1-18 -->
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        let timerInterval;
+        let startTime;
+        let pausedTime = 0;
+        let isPaused = false;
+
+        // Initialize slide grid
+        function initializeSlideGrid() {
+            const slideGrid = document.querySelector('.slide-grid');
+            for (let i = 1; i <= 18; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'slide-btn';
+                btn.textContent = i;
+                btn.onclick = () => goToSlide(i);
+                if (i === 1) btn.classList.add('current');
+                slideGrid.appendChild(btn);
+            }
+        }
+
+        // Send command to presentation
+        function sendCommand(command) {
+            localStorage.setItem('presentation_command', command);
+            updateStatus(`Sent: ${command}`);
+            
+            // Vibrate on mobile devices for tactile feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < 18) {
+                sendCommand('next');
+                updateCurrentSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                sendCommand('prev');
+                updateCurrentSlide(currentSlide - 1);
+            }
+        }
+
+        function goToSlide(slideNum) {
+            sendCommand(`goto_${slideNum}`);
+            updateCurrentSlide(slideNum);
+        }
+
+        function pausePresentation() {
+            sendCommand('pause');
+        }
+
+        function updateCurrentSlide(slideNum) {
+            currentSlide = slideNum;
+            document.getElementById('slideCounter').textContent = `${slideNum} / 18`;
+            
+            // Update slide grid
+            document.querySelectorAll('.slide-btn').forEach((btn, index) => {
+                btn.classList.toggle('current', index + 1 === slideNum);
+            });
+        }
+
+        function updateStatus(message) {
+            document.getElementById('statusMessage').textContent = message;
+            setTimeout(() => {
+                document.getElementById('statusMessage').textContent = 'Ready to control presentation';
+            }, 2000);
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (isPaused) {
+                startTime = Date.now() - pausedTime;
+                isPaused = false;
+            } else {
+                startTime = Date.now();
+                pausedTime = 0;
+            }
+            
+            timerInterval = setInterval(updateTimer, 1000);
+            updateStatus('Timer started');
+        }
+
+        function pauseTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                pausedTime = Date.now() - startTime;
+                isPaused = true;
+                updateStatus('Timer paused');
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            pausedTime = 0;
+            isPaused = false;
+            document.getElementById('timerDisplay').textContent = '00:00';
+            updateStatus('Timer reset');
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Prevent screen sleep during presentation
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                updateStatus('Screen will stay awake');
+            } catch (err) {
+                console.log('Wake lock not supported');
+            }
+        }
+
+        // Keyboard shortcuts for the remote
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    goToSlide(1);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    goToSlide(18);
+                    break;
+                case 's':
+                    e.preventDefault();
+                    startTimer();
+                    break;
+                case 'p':
+                    e.preventDefault();
+                    pauseTimer();
+                    break;
+                case 'r':
+                    e.preventDefault();
+                    resetTimer();
+                    break;
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSlideGrid();
+            requestWakeLock();
+            
+            // Check if presentation is in the same browser
+            if (localStorage.getItem('presentation_command')) {
+                updateStatus('Connected to presentation');
+            }
+        });
+
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && wakeLock !== null) {
+                wakeLock.release();
+                wakeLock = null;
+            } else if (!document.hidden) {
+                requestWakeLock();
+            }
+        });
+    </script>
+</body>
+</html>
